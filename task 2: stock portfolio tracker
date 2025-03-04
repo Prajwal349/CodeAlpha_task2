@@ -1,0 +1,30 @@
+import yfinance as yf
+
+class StockPortfolio:
+    def __init__(self):
+        self.stocks = {}
+
+    def add_stock(self, symbol, shares):
+        if symbol in self.stocks:
+            self.stocks[symbol] += shares
+        else:
+            self.stocks[symbol] = shares
+
+    def remove_stock(self, symbol, shares):
+        if symbol in self.stocks and self.stocks[symbol] >= shares:
+            self.stocks[symbol] -= shares
+            if self.stocks[symbol] == 0:
+                del self.stocks[symbol]
+
+    def get_portfolio_value(self):
+        total_value = 0
+        for symbol, shares in self.stocks.items():
+            stock = yf.Ticker(symbol)
+            current_price = stock.history(period="1d")['Close'][0]
+            total_value += current_price * shares
+        return total_value
+
+portfolio = StockPortfolio()
+portfolio.add_stock("AAPL", 10)
+portfolio.add_stock("GOOG", 5)
+print("Portfolio Value: $", portfolio.get_portfolio_value())
